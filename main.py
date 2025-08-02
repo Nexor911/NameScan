@@ -1,5 +1,6 @@
 import requests
 import random
+from colorama import Fore, Style
 from sites import urls
 
 cookies = {
@@ -76,10 +77,10 @@ def check_account(bazo_url, username):
         response = requests.get(url, headers=headers, cookies=cookies ,timeout=5)
         if response.status_code == 200:
             found_account.append(url)
-            print(f"[+] Акк зареган {url}")
+            print(f"{Fore.GREEN}[+] Акк зареган {url} {Style.RESET_ALL}")
             return True
         elif response.status_code == 404:
-            print(f"Акк не найден {url}")
+            print(f"{Fore.RED}Акк не найден {url}")
             return False
         else:
             print(f'error: {response.status_code}')
