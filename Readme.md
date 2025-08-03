@@ -17,3 +17,4 @@
 2. Перейди в папку с программой
 3. pip install -r requirements.txt
 4. Запусти main.py
+5. Введи никнейм
