@@ -80,7 +80,7 @@ def check_account(bazo_url, username):
             print(f"{Fore.GREEN}[+] Акк зареган {url} {Style.RESET_ALL}")
             return True
         elif response.status_code == 404:
-            print(f"{Fore.RED}Акк не найден {url}")
+            print(f"{Fore.RED}Акк не найден {url} {Style.RESET_ALL}")
             return False
         else:
             print(f'error: {response.status_code}')
@@ -91,6 +91,17 @@ def check_account(bazo_url, username):
 for url in urls:
     check_account(url, username)
 
-with open("result.txt", "w") as f:
-    for account in found_account:
-        f.write(account + "\n")
+format_file = input("В каком формате сохранить результат? (txt/json): ")
+
+if format_file not in ["txt", "json"]:
+    print("Неверный выбор формата файла")
+    input("press enter to exit...")
+
+if format_file == "txt":
+    with open(f"result.txt", "w") as f:
+        for account in found_account:
+            f.write(account + "\n")
+
+elif format_file == "json":
+    with open(f"result.json", "r") as f:
+        json.dump(found_account, f, indent=4, ensure_ascii=False)
