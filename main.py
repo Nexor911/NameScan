@@ -103,5 +103,5 @@ if format_file == "txt":
             f.write(account + "\n")
 
 elif format_file == "json":
-    with open(f"result.json", "r") as f:
+    with open(f"result.json", "w") as f:
         json.dump(found_account, f, indent=4, ensure_ascii=False)
