@@ -2,6 +2,7 @@ import requests
 import random
 from colorama import Fore, Style
 from sites import urls
+import json
 
 cookies = {
     "sessionid": "d8a7e9c8d01e4c96bb1b6c3fc7fa40c7",
