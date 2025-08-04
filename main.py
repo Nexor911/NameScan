@@ -68,7 +68,7 @@ print(r"""
 username = input("Введите юзернейм: ").strip()
 
 if not username:
-    print("никнейм отсутствует")
+    print("Никнейм отсутствует")
     input("press enter to exit...")
     exit()
 
