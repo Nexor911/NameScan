@@ -56,6 +56,8 @@ headers = {
 
 found_account = []
 
+working_proxies = []
+
 print(r"""
  _   _                      _____                       
 | \ | |                    / ____|                      
@@ -68,14 +70,58 @@ print(r"""
 username = input("Введите юзернейм: ").strip()
 
 if not username:
-    print("Никнейм отсутствует")
+    print("никнейм отсутствует")
     input("press enter to exit...")
     exit()
+
+use_proxy = input("Использовать прокси (y/n): ")
+
+def download_proxies():
+    url = "https://www.proxy-list.download/api/v1/get?type=http"
+    try:
+        response = requests.get(url, timeout=10)
+        if response.status_code == 200:
+            proxy_list = response.text.strip().split('\r\n')
+            print(f"[✓] Загружено {len(proxy_list)} прокси с сайта.")
+            return proxy_list
+        else:
+            print(f"[✗] Не удалось получить прокси: {response.status_code}")
+            return []
+    except Exception as e:
+        print(f"[✗] Ошибка при загрузке прокси: {e}")
+        return []
+
+def check_proxy(proxy_url):
+    try:
+        proxies = {
+            "http": proxy_url,
+            "https": proxy_url
+        }
+        response = requests.get("http://httpbin.org/ip", proxies=proxies, timeout=3)
+        if response.status_code == 200:
+            print(f"[+] Рабочий: {proxy_url} → IP: {response.json()['origin']}")
+            return True
+        else:
+            print(f"[-] Не работает: {proxy_url}")
+            return False
+    except Exception as e:
+        print(f"[-] Ошибка: {proxy_url} → {e}")
+        return False
+
 
 def check_account(bazo_url, username):
     try:
         url = bazo_url + username
-        response = requests.get(url, headers=headers, cookies=cookies ,timeout=5)
+        if use_proxy == "y" and working_proxies:
+            proxy_url = random.choice(working_proxies)
+            proxies = {
+                "http": proxy_url,
+                "https": proxy_url
+            }
+            response = requests.get(url, headers=headers, cookies=cookies, proxies=proxies, timeout=5)
+        else:
+            response = requests.get(url, headers=headers, cookies=cookies, timeout=5)
+
         if response.status_code == 200:
             found_account.append(url)
             print(f"{Fore.GREEN}[+] Акк зареган {url} {Style.RESET_ALL}")
@@ -89,6 +135,16 @@ def check_account(bazo_url, username):
     except Exception as e:
         print(f'error: {e}')
 
+if use_proxy == "y":
+    proxy_list = download_proxies()
+    for proxy in proxy_list:
+        if check_proxy(proxy):
+            working_proxies.append(proxy)
+
+if not working_proxies:
+    print("Нету рабочих прокси")
+    use_proxy = "n"
+
 for url in urls:
     check_account(url, username)
 
@@ -97,6 +153,7 @@ format_file = input("В каком формате сохранить резул�
 if format_file not in ["txt", "json"]:
     print("Неверный выбор формата файла")
     input("press enter to exit...")
+    exit()
 
 if format_file == "txt":
     with open(f"result.txt", "w") as f:
